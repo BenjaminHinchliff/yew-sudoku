@@ -1,14 +1,16 @@
 use yew::prelude::*;
 
-use crate::digit::Digit;
+use crate::{cell::Cell, digit::Digit};
+
+pub type BoardData = [[Option<Digit>; 9]; 9];
 
 #[derive(Properties, Debug, Clone, PartialEq)]
 pub struct Props {
-    pub value: Option<Digit>,
+    pub data: BoardData,
 }
 
-pub struct Cell(Props);
-impl Component for Cell {
+pub struct Board(Props);
+impl Component for Board {
     type Message = ();
     type Properties = Props;
 
@@ -30,13 +32,12 @@ impl Component for Cell {
     }
 
     fn view(&self) -> Html {
-        let val = if let Some(v) = self.0.value {
-            v.to_string()
-        } else {
-            " ".to_string()
-        };
         html! {
-            <button class="cell">{ val }</button>
+            <div id="board">
+                { self.0.data.iter().flatten().map(|c| { html! {
+                    <Cell value={c.clone()} />
+                } }).collect::<Html>() }
+            </div>
         }
     }
 }

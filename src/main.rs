@@ -1,18 +1,18 @@
 use yew::prelude::*;
 
 mod cell;
-use cell::Cell;
+mod digit;
+mod board;
+use board::{Board, BoardData};
 
 enum Msg {
     AddOne,
 }
 
 struct Model {
-    // `ComponentLink` is like a reference to a component.
-    // It can be used to send messages to the component
     link: ComponentLink<Self>,
     value: i64,
-    board: [[Option<u8>; 9]; 9],
+    board: BoardData,
 }
 
 impl Component for Model {
@@ -31,27 +31,20 @@ impl Component for Model {
         match msg {
             Msg::AddOne => {
                 self.value += 1;
-                // the value has changed so we need to
-                // re-render for it to appear on the page
                 true
             }
         }
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        // Should only return "true" if new properties are different to
-        // previously received properties.
-        // This component has no properties so we will always return "false".
         false
     }
 
     fn view(&self) -> Html {
         html! {
-            <div id="board">
-                { self.board.iter().flatten().map(|c| { html! {
-                    <Cell value={c.clone()} />
-                } }).collect::<Html>() }
-            </div>
+            <main>
+                <Board data={self.board} />
+            </main>
         }
     }
 }
