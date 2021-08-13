@@ -1,0 +1,19 @@
+#board {
+	display: grid;
+	grid-template-columns: repeat(9, auto);
+	aspect-ratio: 1 / 1;
+	height: 100%;
+	margin: auto;
+	object-fit: contain;
+}
+
+.cell {
+	font-size: 1.75rem;
+}
+
+@media only screen and (min-width: 768px) {
+	#board {
+		width: 768px;
+		height: auto;
+	}
+}
