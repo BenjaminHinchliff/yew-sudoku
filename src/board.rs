@@ -45,11 +45,28 @@ impl Component for Board {
     }
 
     fn view(&self) -> Html {
+        let cells = self
+            .props
+            .data
+            .iter()
+            .enumerate()
+            .flat_map(|(y, row)| {
+                row.iter().enumerate().map(move |(x, c)| {
+                    let onclick = self.link.callback(move |_| Msg::Select((x, y)));
+                    let val = if let Some(c) = c {
+                        c.to_string()
+                    } else {
+                        " ".to_string()
+                    };
+                    html! {
+                        <button class="cell" onclick={onclick}>{ val }</button>
+                    }
+                })
+            })
+            .collect::<Html>();
         html! {
             <div id="board">
-                { self.props.data.iter().enumerate().flat_map(|(y, row)| { row.iter().enumerate().map(move |(x, c)| html! {
-                    <button class="cell" onclick=self.link.callback(move |_| Msg::Select((x, y)))>{ if let Some(c) = c { c.to_string() } else { " ".to_string() } }</button>
-                }) }).collect::<Html>() }
+                { cells }
             </div>
         }
     }
