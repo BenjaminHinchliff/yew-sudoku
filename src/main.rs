@@ -1,18 +1,21 @@
+use digit::Digit;
 use yew::prelude::*;
 
-mod cell;
-mod digit;
 mod board;
+mod digit;
+mod picker;
 use board::{Board, BoardData};
+use picker::Picker;
 
 enum Msg {
-    AddOne,
+    Select((usize, usize)),
+    Pick(Option<Digit>),
 }
 
 struct Model {
     link: ComponentLink<Self>,
-    value: i64,
     board: BoardData,
+    picked: Option<Digit>,
 }
 
 impl Component for Model {
@@ -22,18 +25,21 @@ impl Component for Model {
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
-            value: 0,
             board: [[None; 9]; 9],
+            picked: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::AddOne => {
-                self.value += 1;
-                true
+            Msg::Pick(picked) => {
+                self.picked = picked;
+            }
+            Msg::Select((x, y)) => {
+                self.board[y][x] = self.picked;
             }
         }
+        true
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
@@ -43,7 +49,8 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <main>
-                <Board data={self.board} />
+                <Board data={self.board} onselect=self.link.callback(Msg::Select) />
+                <Picker onpick=self.link.callback(Msg::Pick) />
             </main>
         }
     }

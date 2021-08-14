@@ -1,30 +1,43 @@
 use yew::prelude::*;
 
-use crate::{cell::Cell, digit::Digit};
+use crate::digit::Digit;
 
 pub type BoardData = [[Option<Digit>; 9]; 9];
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Msg {
+    Select((usize, usize)),
+}
 
 #[derive(Properties, Debug, Clone, PartialEq)]
 pub struct Props {
     pub data: BoardData,
+    pub onselect: Callback<(usize, usize)>,
 }
 
-pub struct Board(Props);
+pub struct Board {
+    props: Props,
+    link: ComponentLink<Self>,
+}
+
 impl Component for Board {
-    type Message = ();
+    type Message = Msg;
     type Properties = Props;
 
-    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        Self(props)
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        Self { props, link }
     }
 
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        false
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+            Msg::Select(pos) => self.props.onselect.emit(pos),
+        }
+        true
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.0 != props {
-            self.0 = props;
+        if self.props != props {
+            self.props = props;
             true
         } else {
             false
@@ -34,9 +47,9 @@ impl Component for Board {
     fn view(&self) -> Html {
         html! {
             <div id="board">
-                { self.0.data.iter().flatten().map(|c| { html! {
-                    <Cell value={c.clone()} />
-                } }).collect::<Html>() }
+                { self.props.data.iter().enumerate().flat_map(|(y, row)| { row.iter().enumerate().map(move |(x, c)| html! {
+                    <button class="cell" onclick=self.link.callback(move |_| Msg::Select((x, y)))>{ if let Some(c) = c { c.to_string() } else { " ".to_string() } }</button>
+                }) }).collect::<Html>() }
             </div>
         }
     }
