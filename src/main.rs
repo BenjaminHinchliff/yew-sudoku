@@ -1,6 +1,7 @@
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+use sudoku::Sudoku;
 use yew::prelude::*;
 
 mod board;
@@ -49,7 +50,10 @@ impl Component for Model {
                 self.picked = picked;
             }
             Msg::Select((x, y)) => {
-                self.board[y][x].value = self.picked;
+                self.board.data[y][x].value = self.picked;
+                if Sudoku::from_bytes(self.board.into()).unwrap().is_solved() {
+                    log::debug!("solved stuff");
+                }
             }
         }
         true
@@ -62,7 +66,7 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <main>
-                <BoardView data={self.board} onselect=self.link.callback(Msg::Select) />
+                <BoardView board={self.board} onselect=self.link.callback(Msg::Select) />
                 <Picker picked={self.picked} onpick=self.link.callback(Msg::Pick) />
             </main>
         }

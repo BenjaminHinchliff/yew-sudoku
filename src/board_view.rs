@@ -9,7 +9,7 @@ pub enum Msg {
 
 #[derive(Properties, Debug, Clone, PartialEq)]
 pub struct Props {
-    pub data: Board,
+    pub board: Board,
     pub onselect: Callback<(usize, usize)>,
 }
 
@@ -45,6 +45,7 @@ impl Component for BoardView {
     fn view(&self) -> Html {
         let cells = self
             .props
+            .board
             .data
             .iter()
             .enumerate()
