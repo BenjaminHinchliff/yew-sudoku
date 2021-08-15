@@ -53,16 +53,8 @@ impl Component for PickerCell {
         } else {
             "X".to_string()
         };
-        let pick_classes = classes!(
-            "pick",
-            if self.props.picked {
-                Some("pick-selected")
-            } else {
-                None
-            }
-        );
         html! {
-            <button class=pick_classes onclick={onclick}>{ val }</button>
+            <button class="pick" disabled=self.props.picked onclick=onclick>{ val }</button>
         }
     }
 }

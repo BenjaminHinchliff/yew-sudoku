@@ -1,16 +1,18 @@
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-use digit::Digit;
-use generate::generate_board;
 use yew::prelude::*;
 
 mod board;
+mod board_view;
 mod digit;
 mod generate;
 mod picker;
 mod picker_cell;
-use board::{Board, BoardData};
+use board::Board;
+use board_view::BoardView;
+use digit::Digit;
+use generate::generate_board;
 use picker::Picker;
 
 enum Msg {
@@ -21,7 +23,7 @@ enum Msg {
 
 struct Model {
     link: ComponentLink<Self>,
-    board: BoardData,
+    board: Board,
     picked: Option<Digit>,
 }
 
@@ -33,7 +35,7 @@ impl Component for Model {
         link.send_message(Msg::GenerateBoard);
         Self {
             link,
-            board: BoardData::default(),
+            board: Board::default(),
             picked: None,
         }
     }
@@ -47,7 +49,7 @@ impl Component for Model {
                 self.picked = picked;
             }
             Msg::Select((x, y)) => {
-                self.board[y][x] = self.picked;
+                self.board[y][x].value = self.picked;
             }
         }
         true
@@ -60,7 +62,7 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <main>
-                <Board data={self.board} onselect=self.link.callback(Msg::Select) />
+                <BoardView data={self.board} onselect=self.link.callback(Msg::Select) />
                 <Picker picked={self.picked} onpick=self.link.callback(Msg::Pick) />
             </main>
         }
