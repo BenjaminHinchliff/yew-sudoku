@@ -31,6 +31,10 @@ main {
 	font-size: 2rem;
 }
 
+.pick-selected {
+	background-color: orange;
+}
+
 @media only screen and (min-width: 765px) {
 	.cell {
 		width: 85px;

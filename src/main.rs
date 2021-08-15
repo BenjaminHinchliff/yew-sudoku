@@ -1,3 +1,6 @@
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 use digit::Digit;
 use generate::generate_board;
 use yew::prelude::*;
@@ -6,6 +9,7 @@ mod board;
 mod digit;
 mod generate;
 mod picker;
+mod picker_cell;
 use board::{Board, BoardData};
 use picker::Picker;
 
@@ -57,13 +61,21 @@ impl Component for Model {
         html! {
             <main>
                 <Board data={self.board} onselect=self.link.callback(Msg::Select) />
-                <Picker onpick=self.link.callback(Msg::Pick) />
+                <Picker picked={self.picked} onpick=self.link.callback(Msg::Pick) />
             </main>
         }
     }
 }
 
-fn main() {
+#[cfg(feature = "wasm-logger")]
+fn init_logging() {
     wasm_logger::init(Default::default());
+}
+
+#[cfg(not(feature = "wasm-logger"))]
+fn init_logging() {}
+
+fn main() {
+    init_logging();
     yew::start_app::<Model>();
 }

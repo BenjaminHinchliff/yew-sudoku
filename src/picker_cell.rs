@@ -1,7 +1,6 @@
-use enum_iterator::IntoEnumIterator;
 use yew::prelude::*;
 
-use crate::{digit::Digit, picker_cell::PickerCell};
+use crate::digit::Digit;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Msg {
@@ -10,25 +9,17 @@ pub enum Msg {
 
 #[derive(Properties, Debug, Clone, PartialEq)]
 pub struct Props {
-    pub picked: Option<Digit>,
+    pub value: Option<Digit>,
+    pub picked: bool,
     pub onpick: Callback<Option<Digit>>,
 }
 
-pub struct Picker {
+pub struct PickerCell {
     link: ComponentLink<Self>,
     props: Props,
 }
 
-impl Picker {
-    fn render_pick(&self, digit: Option<Digit>) -> Html {
-        let onclick = self.link.callback(move |_| Msg::Pick(digit));
-        html! {
-            <PickerCell picked={self.props.picked == digit} onpick={onclick} value={digit} />
-        }
-    }
-}
-
-impl Component for Picker {
+impl Component for PickerCell {
     type Message = Msg;
     type Properties = Props;
 
@@ -55,13 +46,23 @@ impl Component for Picker {
     }
 
     fn view(&self) -> Html {
-        let values = Digit::into_enum_iter()
-            .map(|d| Some(d))
-            .chain(std::iter::once(None));
+        let value = self.props.value;
+        let onclick = self.link.callback(move |_| Msg::Pick(value));
+        let val = if let Some(digit) = value {
+            digit.to_string()
+        } else {
+            "X".to_string()
+        };
+        let pick_classes = classes!(
+            "pick",
+            if self.props.picked {
+                Some("pick-selected")
+            } else {
+                None
+            }
+        );
         html! {
-            <div id="picker">
-                { values.map(|d| self.render_pick(d)).collect::<Html>() }
-            </div>
+            <button class=pick_classes onclick={onclick}>{ val }</button>
         }
     }
 }
