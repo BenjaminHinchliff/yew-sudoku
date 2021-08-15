@@ -1,13 +1,16 @@
 use digit::Digit;
+use generate::generate_board;
 use yew::prelude::*;
 
 mod board;
 mod digit;
+mod generate;
 mod picker;
 use board::{Board, BoardData};
 use picker::Picker;
 
 enum Msg {
+    GenerateBoard,
     Select((usize, usize)),
     Pick(Option<Digit>),
 }
@@ -23,15 +26,19 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        link.send_message(Msg::GenerateBoard);
         Self {
             link,
-            board: [[None; 9]; 9],
+            board: BoardData::default(),
             picked: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::GenerateBoard => {
+                self.board = generate_board();
+            }
             Msg::Pick(picked) => {
                 self.picked = picked;
             }
