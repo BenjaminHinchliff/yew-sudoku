@@ -30,6 +30,7 @@ struct Model {
     link: ComponentLink<Self>,
     board: Board,
     picked: Option<Digit>,
+    solved: bool,
 }
 
 impl Component for Model {
@@ -42,6 +43,7 @@ impl Component for Model {
             link,
             board: Board::default(),
             picked: None,
+            solved: false,
         }
     }
 
@@ -68,7 +70,7 @@ impl Component for Model {
             }
             Msg::IsSolved => {
                 if Sudoku::from_bytes(self.board.into()).unwrap().is_solved() {
-                    log::debug!("solved stuff");
+                    self.solved = true;
                 }
             }
         }
@@ -85,6 +87,7 @@ impl Component for Model {
                 <BoardView board=self.board onselect=self.link.callback(Msg::Select) />
                 <Picker picked=self.picked onpick=self.link.callback(Msg::Pick) />
                 <Controls onsolve=self.link.callback(|_| Msg::Solve) onnew=self.link.callback(|_| Msg::GenerateBoard) />
+                <p id="solved" class=if self.solved { "solved-visible" } else { "" }>{ "Congrats! You Solved It" }</p>
             </main>
         }
     }
