@@ -51,6 +51,7 @@ impl Component for Model {
         match msg {
             Msg::GenerateBoard => {
                 self.board = generate_board();
+                self.solved = false;
             }
             Msg::Pick(picked) => {
                 self.picked = picked;
