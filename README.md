@@ -1,3 +1,3 @@
 # Yew Sudoku
 
-a simple little sudoku frontend build with wasm and yew
+a simple little sudoku frontend built with wasm and yew
