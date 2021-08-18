@@ -20,6 +20,8 @@ enum Msg {
     GenerateBoard,
     Select((usize, usize)),
     Pick(Option<Digit>),
+    Solve,
+    IsSolved,
 }
 
 struct Model {
@@ -51,6 +53,18 @@ impl Component for Model {
             }
             Msg::Select((x, y)) => {
                 self.board.data[y][x].value = self.picked;
+                self.link.send_message(Msg::IsSolved);
+            }
+            Msg::Solve => {
+                self.board = Sudoku::from_bytes(self.board.into())
+                    .unwrap()
+                    .some_solution()
+                    .unwrap()
+                    .to_bytes()
+                    .into();
+                self.link.send_message(Msg::IsSolved);
+            }
+            Msg::IsSolved => {
                 if Sudoku::from_bytes(self.board.into()).unwrap().is_solved() {
                     log::debug!("solved stuff");
                 }
@@ -66,8 +80,12 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <main>
-                <BoardView board={self.board} onselect=self.link.callback(Msg::Select) />
-                <Picker picked={self.picked} onpick=self.link.callback(Msg::Pick) />
+                <BoardView board=self.board onselect=self.link.callback(Msg::Select) />
+                <Picker picked=self.picked onpick=self.link.callback(Msg::Pick) />
+                <div>
+                    <button onclick=self.link.callback(|_| Msg::Solve)>{ "solve" }</button>
+                    <button onclick=self.link.callback(|_| Msg::GenerateBoard)>{ "new" }</button>
+                </div>
             </main>
         }
     }
