@@ -43,26 +43,33 @@ impl Component for BoardView {
     }
 
     fn view(&self) -> Html {
-        let cells = self
-            .props
-            .board
-            .data
-            .iter()
-            .enumerate()
-            .flat_map(|(y, row)| {
-                row.iter().enumerate().map(move |(x, c)| {
+        let cells =
+            self.props
+                .board
+                .data
+                .iter()
+                .enumerate()
+                .flat_map(|(y, row)| {
+                    row.iter().enumerate().map(move |(x, c)| {
                     let onclick = self.link.callback(move |_| Msg::Select((x, y)));
                     let val = if let Some(c) = c.value {
                         c.to_string()
                     } else {
                         " ".to_string()
                     };
+                    let borders = vec![
+                        if x % 3 == 0 { Some("cell-left") } else { None },
+                        if x % 3 == 2 { Some("cell-right") } else { None },
+                        if y % 3 == 0 { Some("cell-top") } else { None },
+                        if y % 3 == 2 { Some("cell-bottom") } else { None },
+                    ];
+                    let classes = classes!("cell", borders);
                     html! {
-                        <button class="cell" disabled=c.disabled onclick={onclick}>{ val }</button>
+                        <button class=classes disabled=c.disabled onclick={onclick}>{ val }</button>
                     }
                 })
-            })
-            .collect::<Html>();
+                })
+                .collect::<Html>();
         html! {
             <div id="board">
                 { cells }
