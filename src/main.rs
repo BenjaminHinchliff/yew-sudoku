@@ -6,12 +6,14 @@ use yew::prelude::*;
 
 mod board;
 mod board_view;
+mod controls;
 mod digit;
 mod generate;
 mod picker;
 mod picker_cell;
 use board::Board;
 use board_view::BoardView;
+use controls::Controls;
 use digit::Digit;
 use generate::generate_board;
 use picker::Picker;
@@ -82,10 +84,7 @@ impl Component for Model {
             <main>
                 <BoardView board=self.board onselect=self.link.callback(Msg::Select) />
                 <Picker picked=self.picked onpick=self.link.callback(Msg::Pick) />
-                <div>
-                    <button onclick=self.link.callback(|_| Msg::Solve)>{ "solve" }</button>
-                    <button onclick=self.link.callback(|_| Msg::GenerateBoard)>{ "new" }</button>
-                </div>
+                <Controls onsolve=self.link.callback(|_| Msg::Solve) onnew=self.link.callback(|_| Msg::GenerateBoard) />
             </main>
         }
     }
